@@ -25,6 +25,10 @@ Before building, set your live CrediAI URL:
 
 Example: if your app is at `https://credi-ai-fake-news.streamlit.app`, use that exact URL.
 
+### Faster load
+
+The app **wakes the server** in the background before loading the WebView (with a short delay), so the first request often hits an already-warming server and the page can load sooner. For **consistently fast** load (no cold start), point `credi_app_url` to a host that doesn’t sleep, e.g. **Streamlit Community Cloud** or **Hugging Face Spaces**, or use a paid Render plan.
+
 ---
 
 ## 2. Open the project in Android Studio

@@ -902,6 +902,58 @@ div[data-testid="stHorizontalBlock"] { align-items: flex-start !important; gap: 
   animation: tab-glow-active 2.5s ease-in-out infinite;
 }
 .stTabs [role="tablist"]{ gap: 1.8rem !important; margin-top: -1.4rem !important; }
+
+/* ── MOBILE (phone view only) ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .nav {
+    flex-wrap: wrap;
+    padding: .6rem 1rem;
+    gap: .5rem;
+  }
+  .nav-brand { flex: 0 0 auto; }
+  .nav-badge { order: 3; width: 100%; justify-content: center; margin-top: .2rem; }
+  .nav-pills {
+    flex-wrap: wrap;
+    gap: .35rem;
+    justify-content: flex-end;
+    max-width: 50%;
+  }
+  .nav-pill { font-size: .48rem !important; padding: .28rem .5rem !important; }
+  .hero { padding: 1rem 1rem .3rem; }
+  .hero-inner { max-width: 100%; }
+  .hero-tag { font-size: .5rem; padding: .2rem .6rem; }
+  .hero-h1 { font-size: 1.85rem; margin-bottom: .6rem; }
+  .hero-sub { font-size: .82rem; margin-bottom: 1.2rem; max-width: 100%; }
+  .hero-pills { gap: .4rem; }
+  .hpill { padding: .4rem .75rem; font-size: .7rem; }
+  .body { padding: 0 1rem 3rem; max-width: 100%; }
+  div[data-testid="stHorizontalBlock"] {
+    flex-wrap: wrap !important;
+  }
+  [data-testid="column"] {
+    min-width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+  .panel { margin-bottom: .8rem; }
+  .ph { padding: .6rem 1rem; }
+  .ph-lbl { font-size: .52rem; }
+  .pb { padding: 1rem; }
+  .stTabs [role="tablist"] {
+    gap: .5rem !important;
+    flex-wrap: wrap !important;
+    margin-top: -1.2rem !important;
+  }
+  .stTabs [role="tab"] {
+    padding: .5rem .75rem !important;
+    font-size: .48rem !important;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .stTextArea textarea { font-size: .85rem !important; padding: .8rem !important; min-height: 120px; }
+  .stButton > button { min-height: 44px !important; padding: .5rem 1rem !important; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -1074,13 +1126,18 @@ def _pt(s):
         return email.utils.parsedate_to_datetime(s).strftime("%b %d · %H:%M")
     except: return "Today"
 
+_RSS_TIMEOUT = 4  # seconds per feed so the page doesn't hang on slow RSS
+
 @st.cache_data(ttl=60, show_spinner=False)
 def fetch_news(_seed, n=6):
     pool=[]
     errs=[]
     for src,url,fav,cat in RSS:
         try:
-            parsed = feedparser.parse(url)
+            req = urllib.request.Request(url, headers={"User-Agent": "CrediAI/1.0"})
+            with urllib.request.urlopen(req, timeout=_RSS_TIMEOUT) as resp:
+                raw = resp.read()
+            parsed = feedparser.parse(raw)
             if getattr(parsed, "bozo", 0):
                 # feedparser sets bozo=1 on parse errors; bozo_exception may exist
                 ex = getattr(parsed, "bozo_exception", None)
