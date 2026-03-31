@@ -1,4 +1,4 @@
-# CrediAI
+# CrediAI-V2
 
 **CrediAI** is a fake-news detection app that analyzes text in **6 languages** (English, Tamil, Hindi, Telugu, Malayalam, Kannada) using hybrid AI + signal scoring. This repo contains the web app, cloud configs, and an Android WebView app.
 
